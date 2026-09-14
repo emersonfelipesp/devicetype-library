@@ -1,10 +1,11 @@
 import glob
 import json
-import os
 import pytest
 import yaml
-from jsonschema import RefResolver, Draft4Validator
+from jsonschema import Draft4Validator
 from jsonschema.exceptions import ValidationError
+from referencing import Registry
+from referencing.jsonschema import DRAFT4
 
 
 SCHEMAS = (
@@ -22,6 +23,14 @@ COMPONENT_TYPES = (
     'rear-ports',
     'device-bays',
     'module-bays',
+)
+
+with open('schema/components.json') as components_file:
+    components_schema = json.load(components_file)
+
+SCHEMA_REGISTRY = Registry().with_resource(
+    'components.json',
+    DRAFT4.create_resource(components_schema),
 )
 
 
@@ -79,8 +88,7 @@ def test_definitions(file_path, schema):
 
     # Validate YAML definition against the supplied schema
     try:
-        resolver = RefResolver(f'file://{os.getcwd()}/schema/devicetype.json', schema)
-        Draft4Validator(schema, resolver=resolver).validate(definition)
+        Draft4Validator(schema, registry=SCHEMA_REGISTRY).validate(definition)
     except ValidationError as e:
         pytest.fail(f"{file_path} failed validation: {e}", False)
 

@@ -133,3 +133,15 @@ There are two ways this repo focuses on keeping quality device-type definitions:
   - To uninstall the pre-commit script `pre-commit uninstall`
   - Learn more about [pre-commit](https://pre-commit.com/)
 - GitHub Actions - Automatically run before a PR can be merged.  Repeats yamllint & validates against NetBox Device-Type Schema.
+
+The GitHub and Gitea validation workflows use Python 3.12, audit the pinned
+dependencies with `pip-audit`, apply the repository's strict `yamllint`
+configuration, and run the full `pytest` schema-validation suite. Run the same
+checks locally before submitting a pull request:
+
+```bash
+python -m pip install -r requirements.txt pip-audit==2.10.1
+pip-audit --progress-spinner off -r requirements.txt
+yamllint --format parsable --strict -c=tests/yamllint.yaml device-types/ module-types/
+pytest --tb=short -v
+```
