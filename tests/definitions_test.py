@@ -1,12 +1,12 @@
 import glob
 import json
+
 import pytest
 import yaml
 from jsonschema import Draft4Validator
 from jsonschema.exceptions import ValidationError
 from referencing import Registry
 from referencing.jsonschema import DRAFT4
-
 
 SCHEMAS = (
     ('device-types', 'devicetype.json'),
